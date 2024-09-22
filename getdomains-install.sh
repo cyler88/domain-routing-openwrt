@@ -12,20 +12,20 @@ route_vpn () {
 cat << EOF > /etc/hotplug.d/iface/30-vpnroute
 #!/bin/sh
 
-ip route add table vpn default dev wg0
+ip route add table vpn default dev wg100
 EOF
     elif [ "$TUNNEL" == awg ]; then
 cat << EOF > /etc/hotplug.d/iface/30-vpnroute
 #!/bin/sh
 
-ip route add table vpn default dev awg0
+ip route add table vpn default dev awg100
 EOF
     elif [ "$TUNNEL" == singbox ] || [ "$TUNNEL" == ovpn ] || [ "$TUNNEL" == tun2socks ]; then
 cat << EOF > /etc/hotplug.d/iface/30-vpnroute
 #!/bin/sh
 
 sleep 10
-ip route add table vpn default dev tun0
+ip route add table vpn default dev tun100
 EOF
     fi
 }
@@ -139,24 +139,24 @@ add_tunnel() {
             echo $WG_ENDPOINT_PORT
         fi
         
-        uci set network.wg0=interface
-        uci set network.wg0.proto='wireguard'
-        uci set network.wg0.private_key=$WG_PRIVATE_KEY
-        uci set network.wg0.listen_port='51820'
-        uci set network.wg0.addresses=$WG_IP
+        uci set network.wg100=interface
+        uci set network.wg100.proto='wireguard'
+        uci set network.wg100.private_key=$WG_PRIVATE_KEY
+        uci set network.wg100.listen_port='51820'
+        uci set network.wg100.addresses=$WG_IP
 
-        if ! uci show network | grep -q wireguard_wg0; then
-            uci add network wireguard_wg0
+        if ! uci show network | grep -q wireguard_wg100; then
+            uci add network wireguard_wg100
         fi
-        uci set network.@wireguard_wg0[0]=wireguard_wg0
-        uci set network.@wireguard_wg0[0].name='wg0_client'
-        uci set network.@wireguard_wg0[0].public_key=$WG_PUBLIC_KEY
-        uci set network.@wireguard_wg0[0].preshared_key=$WG_PRESHARED_KEY
-        uci set network.@wireguard_wg0[0].route_allowed_ips='0'
-        uci set network.@wireguard_wg0[0].persistent_keepalive='25'
-        uci set network.@wireguard_wg0[0].endpoint_host=$WG_ENDPOINT
-        uci set network.@wireguard_wg0[0].allowed_ips='0.0.0.0/0'
-        uci set network.@wireguard_wg0[0].endpoint_port=$WG_ENDPOINT_PORT
+        uci set network.@wireguard_wg100[0]=wireguard_wg100
+        uci set network.@wireguard_wg100[0].name='wg100_client'
+        uci set network.@wireguard_wg100[0].public_key=$WG_PUBLIC_KEY
+        uci set network.@wireguard_wg100[0].preshared_key=$WG_PRESHARED_KEY
+        uci set network.@wireguard_wg100[0].route_allowed_ips='0'
+        uci set network.@wireguard_wg100[0].persistent_keepalive='25'
+        uci set network.@wireguard_wg100[0].endpoint_host=$WG_ENDPOINT
+        uci set network.@wireguard_wg100[0].allowed_ips='0.0.0.0/0'
+        uci set network.@wireguard_wg100[0].endpoint_port=$WG_ENDPOINT_PORT
         uci commit
     fi
 
@@ -190,7 +190,7 @@ add_tunnel() {
         if grep -q "option user 'sing-box'" /etc/config/sing-box; then
             sed -i "s/	option user \'sing-box\'/	option user \'root\'/" /etc/config/sing-box
         fi
-        if grep -q "tun0" /etc/sing-box/config.json; then
+        if grep -q "tun100" /etc/sing-box/config.json; then
         printf "\033[32;1mConfig /etc/sing-box/config.json already exists\033[0m\n"
         else
 cat << 'EOF' > /etc/sing-box/config.json
@@ -201,7 +201,7 @@ cat << 'EOF' > /etc/sing-box/config.json
   "inbounds": [
     {
       "type": "tun",
-      "interface_name": "tun0",
+      "interface_name": "tun100",
       "domain_strategy": "ipv4_only",
       "inet4_address": "172.16.250.1/30",
       "auto_route": false,
@@ -278,35 +278,35 @@ EOF
             echo $AWG_ENDPOINT_PORT
         fi
         
-        uci set network.awg0=interface
-        uci set network.awg0.proto='amneziawg'
-        uci set network.awg0.private_key=$AWG_PRIVATE_KEY
-        uci set network.awg0.listen_port='51820'
-        uci set network.awg0.addresses=$AWG_IP
+        uci set network.awg100=interface
+        uci set network.awg100.proto='amneziawg'
+        uci set network.awg100.private_key=$AWG_PRIVATE_KEY
+        uci set network.awg100.listen_port='51820'
+        uci set network.awg100.addresses=$AWG_IP
 
-        uci set network.awg0.awg_jc=$AWG_JC
-        uci set network.awg0.awg_jmin=$AWG_JMIN
-        uci set network.awg0.awg_jmax=$AWG_JMAX
-        uci set network.awg0.awg_s1=$AWG_S1
-        uci set network.awg0.awg_s2=$AWG_S2
-        uci set network.awg0.awg_h1=$AWG_H1
-        uci set network.awg0.awg_h2=$AWG_H2
-        uci set network.awg0.awg_h3=$AWG_H3
-        uci set network.awg0.awg_h4=$AWG_H4
+        uci set network.awg100.awg_jc=$AWG_JC
+        uci set network.awg100.awg_jmin=$AWG_JMIN
+        uci set network.awg100.awg_jmax=$AWG_JMAX
+        uci set network.awg100.awg_s1=$AWG_S1
+        uci set network.awg100.awg_s2=$AWG_S2
+        uci set network.awg100.awg_h1=$AWG_H1
+        uci set network.awg100.awg_h2=$AWG_H2
+        uci set network.awg100.awg_h3=$AWG_H3
+        uci set network.awg100.awg_h4=$AWG_H4
 
-        if ! uci show network | grep -q amneziawg_awg0; then
-            uci add network amneziawg_awg0
+        if ! uci show network | grep -q amneziawg_awg100; then
+            uci add network amneziawg_awg100
         fi
 
-        uci set network.@amneziawg_awg0[0]=amneziawg_awg0
-        uci set network.@amneziawg_awg0[0].name='awg0_client'
-        uci set network.@amneziawg_awg0[0].public_key=$AWG_PUBLIC_KEY
-        uci set network.@amneziawg_awg0[0].preshared_key=$AWG_PRESHARED_KEY
-        uci set network.@amneziawg_awg0[0].route_allowed_ips='0'
-        uci set network.@amneziawg_awg0[0].persistent_keepalive='25'
-        uci set network.@amneziawg_awg0[0].endpoint_host=$AWG_ENDPOINT
-        uci set network.@amneziawg_awg0[0].allowed_ips='0.0.0.0/0'
-        uci set network.@amneziawg_awg0[0].endpoint_port=$AWG_ENDPOINT_PORT
+        uci set network.@amneziawg_awg100[0]=amneziawg_awg100
+        uci set network.@amneziawg_awg100[0].name='awg100_client'
+        uci set network.@amneziawg_awg100[0].public_key=$AWG_PUBLIC_KEY
+        uci set network.@amneziawg_awg100[0].preshared_key=$AWG_PRESHARED_KEY
+        uci set network.@amneziawg_awg100[0].route_allowed_ips='0'
+        uci set network.@amneziawg_awg100[0].persistent_keepalive='25'
+        uci set network.@amneziawg_awg100[0].endpoint_host=$AWG_ENDPOINT
+        uci set network.@amneziawg_awg100[0].allowed_ips='0.0.0.0/0'
+        uci set network.@amneziawg_awg100[0].endpoint_port=$AWG_ENDPOINT_PORT
         uci commit
     fi
 
@@ -339,27 +339,27 @@ add_zone() {
         printf "\033[32;1mCreate zone\033[0m\n"
 
         # Delete exists zone
-        zone_tun_id=$(uci show firewall | grep -E '@zone.*tun0' | awk -F '[][{}]' '{print $2}' | head -n 1)
+        zone_tun_id=$(uci show firewall | grep -E '@zone.*tun100' | awk -F '[][{}]' '{print $2}' | head -n 1)
         if [ "$zone_tun_id" == 0 ] || [ "$zone_tun_id" == 1 ]; then
-            printf "\033[32;1mtun0 zone has an identifier of 0 or 1. That's not ok. Fix your firewall. lan and wan zones should have identifiers 0 and 1. \033[0m\n"
+            printf "\033[32;1mtun100 zone has an identifier of 0 or 1. That's not ok. Fix your firewall. lan and wan zones should have identifiers 0 and 1. \033[0m\n"
             exit 1
         fi
         if [ ! -z "$zone_tun_id" ]; then
             while uci -q delete firewall.@zone[$zone_tun_id]; do :; done
         fi
 
-        zone_wg_id=$(uci show firewall | grep -E '@zone.*wg0' | awk -F '[][{}]' '{print $2}' | head -n 1)
+        zone_wg_id=$(uci show firewall | grep -E '@zone.*wg100' | awk -F '[][{}]' '{print $2}' | head -n 1)
         if [ "$zone_wg_id" == 0 ] || [ "$zone_wg_id" == 1 ]; then
-            printf "\033[32;1mwg0 zone has an identifier of 0 or 1. That's not ok. Fix your firewall. lan and wan zones should have identifiers 0 and 1. \033[0m\n"
+            printf "\033[32;1mwg100 zone has an identifier of 0 or 1. That's not ok. Fix your firewall. lan and wan zones should have identifiers 0 and 1. \033[0m\n"
             exit 1
         fi
         if [ ! -z "$zone_wg_id" ]; then
             while uci -q delete firewall.@zone[$zone_wg_id]; do :; done
         fi
 
-        zone_awg_id=$(uci show firewall | grep -E '@zone.*awg0' | awk -F '[][{}]' '{print $2}' | head -n 1)
+        zone_awg_id=$(uci show firewall | grep -E '@zone.*awg100' | awk -F '[][{}]' '{print $2}' | head -n 1)
         if [ "$zone_awg_id" == 0 ] || [ "$zone_awg_id" == 1 ]; then
-            printf "\033[32;1mawg0 zone has an identifier of 0 or 1. That's not ok. Fix your firewall. lan and wan zones should have identifiers 0 and 1. \033[0m\n"
+            printf "\033[32;1mawg100 zone has an identifier of 0 or 1. That's not ok. Fix your firewall. lan and wan zones should have identifiers 0 and 1. \033[0m\n"
             exit 1
         fi
         if [ ! -z "$zone_awg_id" ]; then
@@ -369,11 +369,11 @@ add_zone() {
         uci add firewall zone
         uci set firewall.@zone[-1].name="$TUNNEL"
         if [ "$TUNNEL" == wg ]; then
-            uci set firewall.@zone[-1].network='wg0'
+            uci set firewall.@zone[-1].network='wg100'
         elif [ "$TUNNEL" == awg ]; then
-            uci set firewall.@zone[-1].network='awg0'
+            uci set firewall.@zone[-1].network='awg100'
         elif [ "$TUNNEL" == singbox ] || [ "$TUNNEL" == ovpn ] || [ "$TUNNEL" == tun2socks ]; then
-            uci set firewall.@zone[-1].device='tun0'
+            uci set firewall.@zone[-1].device='tun100'
         fi
         if [ "$TUNNEL" == wg ] || [ "$TUNNEL" == awg ] || [ "$TUNNEL" == ovpn ] || [ "$TUNNEL" == tun2socks ]; then
             uci set firewall.@zone[-1].forward='REJECT'
