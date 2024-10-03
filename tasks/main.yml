@@ -227,7 +227,7 @@
         input: ACCEPT
         masq: 1
         mtu_fix: 1
-        device: tun0
+        device: tun100
         family: ipv4
     when: tunnel == "singbox"
     failed_when: ansible_distribution_major_version < "22"
@@ -266,7 +266,7 @@
         input: REJECT
         masq: 1
         mtu_fix: 1
-        device: tun0
+        device: tun100
         family: ipv4
     when: tunnel == "openvpn" or tunnel == "tun2socks"
     notify:

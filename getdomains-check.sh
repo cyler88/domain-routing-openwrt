@@ -408,11 +408,11 @@ fi
 
 # Check OpenVPN
 if [ "$OVPN" == true ]; then
-  if ping -c 1 -q -I tun0 itdog.info | grep -q "1 packets received"; then
+  if ping -c 1 -q -I tun100 itdog.info | grep -q "1 packets received"; then
     checkpoint_true "$OPENVPN_PROTOCOL"
   else
     checkpoint_false "$OPENVPN_PROTOCOL"
-    if traceroute -i tun0 itdog.info -m 1 | grep ms | awk '{print $2}' | grep -c -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'; then
+    if traceroute -i tun100 itdog.info -m 1 | grep ms | awk '{print $2}' | grep -c -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'; then
       echo "$OPENVPN_ROUTING_DOESNT_WORK"
     else
       echo "$OPENVPN_TUNNEL_NOT_WORKING"
@@ -427,7 +427,7 @@ if [ "$OVPN" == true ]; then
   fi
 
   # Check route table
-  if ip route show table vpn | grep -q "default dev tun0"; then
+  if ip route show table vpn | grep -q "default dev tun100"; then
     checkpoint_true "$OPENVPN_ROUTING_TABLE_EXISTS"
   else
     checkpoint_false "$OPENVPN_ROUTING_TABLE_DOESNT_EXIST"
@@ -438,7 +438,7 @@ if opkg list-installed | grep -q sing-box; then
   checkpoint_true "$SINGBOX_INSTALLED"
 
   # Check route table
-  if ip route show table vpn | grep -q "default dev tun0"; then
+  if ip route show table vpn | grep -q "default dev tun100"; then
     checkpoint_true "$SINGBOX_ROUTING_TABLE_EXISTS"
   else
     checkpoint_false "$SINGBOX_ROUTING_TABLE_DOESNT_EXIST"
@@ -459,7 +459,7 @@ if opkg list-installed | grep -q sing-box; then
     IP_EXTERNAL=$(curl -s ifconfig.me)
     IFCONFIG=$(nslookup -type=a ifconfig.me | awk '/^Address: / {print $2}')
 
-    IP_VPN=$(curl --interface tun0 -s ifconfig.me)
+    IP_VPN=$(curl --interface tun100 -s ifconfig.me)
 
     SINGBOX_WORKING=$(update_vpn_ip "$SINGBOX_WORKING_TEMPLATE" "$IP_VPN")
 
@@ -478,7 +478,7 @@ if which tun2socks | grep -q tun2socks; then
   checkpoint_true "$TUN2SOCKS_INSTALLED"
 
   # Check route table
-  if ip route show table vpn | grep -q "default dev tun0"; then
+  if ip route show table vpn | grep -q "default dev tun100"; then
     checkpoint_true "$TUN2SOCKS_ROUTING_TABLE_EXISTS"
   else
     checkpoint_false "$TUN2SOCKS_ROUTING_TABLE_DOESNT_EXIST"
@@ -487,7 +487,7 @@ if which tun2socks | grep -q tun2socks; then
   IP_EXTERNAL=$(curl -s ifconfig.me)
   IFCONFIG=$(nslookup -type=a ifconfig.me | awk '/^Address: / {print $2}')
 
-  IP_VPN=$(curl --interface tun0 -s ifconfig.me)
+  IP_VPN=$(curl --interface tun100 -s ifconfig.me)
 
   TUN2SOCKS_WORKING=$(update_vpn_ip "$TUN2SOCKS_WORKING_TEMPLATE" "$IP_VPN")
 
